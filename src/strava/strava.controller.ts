@@ -60,6 +60,9 @@ export class StravaController {
       stravaToken.access_token,
     );
 
-    return this.stravaService.upsertActivityBulkWrite(activities);
+    return this.stravaService.upsertActivityBulkWrite(
+      stravaToken.user_id,
+      activities,
+    );
   }
 }

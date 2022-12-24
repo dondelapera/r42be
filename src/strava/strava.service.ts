@@ -54,13 +54,16 @@ export class StravaService {
     return result.data;
   }
 
-  upsertActivityBulkWrite(createActivityDto: CreateActivityDto[]) {
+  upsertActivityBulkWrite(
+    userId: string,
+    createActivityDto: CreateActivityDto[],
+  ) {
     return this.activityModel.bulkWrite(
       createActivityDto.map((activity) => {
         return {
           updateOne: {
             filter: { id: activity.id },
-            update: { $set: activity },
+            update: { $set: { ...activity, user_id: userId } },
             upsert: true,
           },
         };
@@ -69,12 +72,21 @@ export class StravaService {
   }
 
   upsertAccount(createAccountDto: CreateAccountDto) {
-    this.accountModel.findOneAndUpdate(
-      {
-        id: createAccountDto.id,
-      },
-      createAccountDto,
-      { upsert: true },
-    );
+    return new Promise((resolve, reject) => {
+      this.accountModel.findOneAndUpdate(
+        {
+          id: createAccountDto.id,
+        },
+        { $set: createAccountDto },
+        { upsert: true, new: true },
+        (err, data) => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve(data);
+        },
+      );
+    });
   }
 }

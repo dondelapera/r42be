@@ -8,6 +8,7 @@ export const StravaToken = createParamDecorator(
     return {
       access_token: _.get(request, 'user.access_token'),
       refresh_token: _.get(request, 'user.refresh_token'),
+      user_id: _.get(request, 'user.athlete.id'),
     };
   },
 );
